@@ -19,17 +19,17 @@ TableWidgets.ColumnType
 
 filters = selectors(data);
 editor = dataeditor(filters);
-viewer = splintergui(editor);
+viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
 
 components = OrderedDict(
     :filters => filters,
     :editor => editor,
-    :viewer => viewer
-)
+    :viewer => viewer)
 
 lt = tabulator(components)
 
 ui = Widget(components, layout = _ -> lt)
+w = Window()
 body!(w,ui)
 ##
 series2D(editor[])

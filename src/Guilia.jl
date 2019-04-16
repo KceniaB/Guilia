@@ -1,6 +1,6 @@
 using TableWidgets
-using Flipping
-using GroupSummaries
+using Flipping: carica
+using Recombinase
 using JuliaDBMeta
 using StatsPlots
 using Interact

@@ -1,36 +1,48 @@
-
-w = Window()
-f  = filepicker();
-body!(w,f)
-
-print(f[])
-
-###
-dati = ("/home/beatriz/mainen.flipping.5ht@gmail.com/Flipping/Datasets/Stimulations/DRN_Nac_Sert_ChR2/streaksDRN_Nac_Sert_ChR2.jld2");
-tab_dat = carica(dati);
-###
-
-data = Observable{Any}(table(tab_dat));
-# Example dict for selectors a = Dict(:MouseID => TableWidgets.categorical, :Session => TableWidgets.numerical, :altro => TableWidgets.arbitrary)
-
 TableWidgets.categorical
 TableWidgets.categorical
 TableWidgets.ColumnType
+#dati = ("/home/beatriz/mainen.flipping.5ht@gmail.com/Flipping/Datasets/Stimulations/DRN_Nac_Sert_ChR2/streaksDRN_Nac_Sert_ChR2.jld2");
 
+f  = filepicker()
+dati = f[]
+dati = "/home/beatriz/mainen.flipping.5ht@gmail.com/Flipping/Datasets/Stimulations/DRN_Opto_Flipping/streaksDRN_Opto_Flipping.jld2"
+tab_dat = carica(dati);
+data = Observable{Any}(table(tab_dat));
 filters = selectors(data);
 editor = dataeditor(filters);
 viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
-
 components = OrderedDict(
     :filters => filters,
     :editor => editor,
     :viewer => viewer)
-
-lt = tabulator(components)
-
-ui = Widget(components, layout = _ -> lt)
+lt = tabulator(components);
+ui = Widget(components, layout = _ -> lt);
 w = Window()
 body!(w,ui)
+##
+dati = "/home/beatriz/mainen.flipping.5ht@gmail.com/Flipping/Datasets/Stimulations/DRN_Opto_Flipping/streaksDRN_Opto_Flipping.jld2"
+tab_dat = carica(dati);
+data = Observable{Any}(table(tab_dat));
+filters = selectors(data);
+editor = dataeditor(filters);
+viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
+components = OrderedDict(
+    :filters => filters,
+    :editor => editor,
+    :viewer => viewer)
+lt = tabulator(components);
+ui = Widget(components, layout = _ -> lt);
+w = Window()
+body!(w,ui)
+##
+args, kwargs = Recombinase.series2D(
+    data[],
+    Recombinase.Group(:Stim),
+    error = :MouseID,
+    select = (:Exp_Day,:AfterLast),
+    ribbon = true
+   )
+plot(args...; kwargs..., legend = :topleft)
 ##
 series2D(editor[])
 Interact.@map!

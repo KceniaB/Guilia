@@ -1,5 +1,5 @@
 using TableWidgets
-using Flipping: carica
+using Flipping
 using Recombinase
 using JuliaDBMeta
 using StatsPlots

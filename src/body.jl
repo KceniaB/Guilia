@@ -4,7 +4,7 @@ end
 
 function mygui(fn)
     data = carica_tab(fn)
-    filters = selectors(data);
+    filters = selectors(data,threshold =10);
     editor = dataeditor(filters);
     viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
 

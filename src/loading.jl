@@ -6,11 +6,9 @@ In this way it automatically calls the first key of the dictionary
 and retunrs the variable stored
 """
 function carica(filename)
-    file = FileIO.load(filename)
-    if isa(file, Dict)
-        data = file[collect(keys(file))[1]]
-    else
-        data = FileIO.load(filename) |> DataFrame
+    if split(filename,".")[end] == "jld"
+        dictionary = BSON.load(filename)
+        data = dictionary[collect(keys(dictionary))[1]]
+        return data
     end
-    return data
 end

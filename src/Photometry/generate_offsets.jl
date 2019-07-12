@@ -14,20 +14,23 @@ function generate_offsets(cam_dict::OrderedDict,session::String,frame_in::Int;wi
         #since offsetrange are usable over any array of matching length it can be set over a general array
         #of legth equal to the camera
         t = collect(1:length(cam_dict[session]))
-        if to_collect.start < 0
+        if to_collect.start <= 0
             to_collect= 1:frame_in + w
         end
         if to_collect.stop > length(t)
             to_collect = frame_in - w:length(t) -5
         end
-        return offsetrange(t,frame_in,to_collect)
+        return offsetrange(t,frame_in)#,to_collect)
     else
-        t = fill(NaN,400)
+        t = fill(NaN,window_s*fps*2+1)
         println("Session $(Session) not found in cam_dict")
-        return offsetrange(t,200,100:300)
+        return offsetrange(t,window_s*fps+1)#,to_collect)
     end
 end
-
+function generate_offsets2(cam_dict::OrderedDict,session::String,frame_in::Int;window_s =30,fps = 50)
+    t = fill(NaN,length(cam_dict[session]))
+    off = Recombinase.offsetrange(t,frame_in)
+end
 
 
 """
@@ -45,7 +48,8 @@ function add_offsets(dic::OrderedDict,data::IndexedTables.IndexedTable)
     seconds = spinbox(value=30)
     el2 = node(:div,  "Data rate in Hz")
     hertz = spinbox(value= 50)
-    output =  Observables.@map @transform data {Offsets = generate_offsets(dic,:Session,cols(&allignment_option);window_s = Int64(&seconds),fps = Int64(&hertz))}
-    wdg = Widget(["Allignment" => allignment_option, "Window"=>seconds, "Rate"=>hertz ],output = output)
+    output = Observables.@map @transform data {Offsets = Recombinase.offsetrange(fill(NaN,length(dic[:Session])),cols(&allignment_option))}
+    # output =  Observables.@map @transform data {Offsets = generate_offsets2(dic,:Session,cols(&allignment_option);window_s = Int64(&seconds),fps = Int64(&hertz))}
+    wdg = Widget(["Allignment" => allignment_option, "Window"=>seconds, "Rate"=>hertz ],output = observe(output))
     @layout! wdg vbox(:Allignment,el1,:Window,el2,:Rate)
 end

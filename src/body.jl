@@ -1,10 +1,10 @@
 function carica_tab(s::String)
-    table(carica(s))
+    table(Guilia.carica(s))
 end
 
 function mygui(fn)
-    data = carica_tab(fn)
-    filters = selectors(data,threshold =10);
+    data = Guilia.carica(fn)
+    filters = selectors(data,threshold = 10);
     editor = dataeditor(filters);
     viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
 

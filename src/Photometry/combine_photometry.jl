@@ -22,6 +22,14 @@ function collect_traces(cam_dict::OrderedDict,session::String,trace::Symbol)
 end
 
 
+function collect_traces(dic::OrderedDict,data::IndexedTables.IndexedTable,trace::Symbol)
+    @apply data begin
+        @transform  {Signal = collect_traces(dic,:Session,^(trace))}
+        @with :Signal
+    end
+end
+
+
 """
 `load_traces(dic::OrderedDict,data::IndexedTables.IndexedTable)`
 
@@ -30,7 +38,9 @@ Allignment alternatives are offer among the columns that contain Int values.
 """
 function load_traces(dic::OrderedDict,data)
     traces_options = dropdown(dic["trace_list"],label = " Select traces")
-    output =  Observables.@map  @transform data {Signal = collect_traces(dic,:Session,^(&traces_options))}
-    wdg = Widget(["Traces" => traces_options],output = observe(output))
+    #output =  Observables.@map  @transform data {Signal = collect_traces(dic,:Session,^(&traces_options))}
+    v = Observables.@map collect_traces(dic,data,&traces_options)
+    output = Observables.@map IndexedTables.transform(data,&traces_options=>&v)
+    wdg = Widget(["Traces" => traces_options],output = output)
     @layout! wdg vbox(:Traces)
 end

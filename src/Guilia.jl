@@ -7,8 +7,9 @@ using Reexport
 @reexport using ProcessPhotometry
 @reexport using OnlineStats
 @reexport using OffsetArrays
+using Observables
 using Recombinase: offsetrange
-
+import Observables: AbstractObservable
 
 include("body.jl")
 include("loading.jl")
@@ -22,7 +23,7 @@ include(joinpath("Photometry","construct.jl"))
  export carica
  export generate_offsets, add_offsets
  export collect_traces, load_traces
- export sliding_mean
+ export sliding_mean, normalise_sliding_mean
  export construct_photo
 
 end

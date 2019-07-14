@@ -16,14 +16,16 @@ include("loading.jl")
 include(joinpath("Photometry","generate_offsets.jl"))
 include(joinpath("Photometry","combine_photometry.jl"))
 include(joinpath("Photometry","sliding_mean.jl"))
+include(joinpath("Photometry","regression.jl"))
 include(joinpath("Photometry","construct.jl"))
 
 
  export launch
  export carica
  export generate_offsets, add_offsets
- export collect_traces, load_traces
- export sliding_mean, normalise_sliding_mean
+ export collect_traces
+ export sliding_f0
+ export regress_trace
  export construct_photo
 
 end

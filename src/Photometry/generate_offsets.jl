@@ -7,49 +7,22 @@ The size of the array is define by `± windows_s*fps`.
 In case the column Trace is not present return an array of NaNs of the
 required size.
 """
-function generate_offsets(cam_dict::OrderedDict,session::String,frame_in::Int;window_s =30,fps = 50)
-    w = window_s*fps
-    to_collect = frame_in - w:frame_in + w
-    if session in keys(cam_dict)
-        #since offsetrange are usable over any array of matching length it can be set over a general array
-        #of legth equal to the camera
-        t = collect(1:length(cam_dict[session]))
+
+function generate_offsets(dic,session,frame_in,wdg)
+    v = collect(1:length(dic[session]))
+    if !wdg[:Time_slice][] & !wdg[:Event_slice][]
+        o = Recombinase.offsetrange(v,frame_in)
+        return o
+    elseif wdg[:Time_slice][]
+        span = wdg[:Slice_sec][]*wdg[:Rate][]
+        to_collect = frame_in - span:frame_in + span
         if to_collect.start <= 0
-            to_collect= 1:frame_in + w
+            to_collect= 1:frame_in + span
         end
-        if to_collect.stop > length(t)
-            to_collect = frame_in - w:length(t) -5
+        if to_collect.stop > length(v)
+            to_collect = frame_in - span:length(v) -5
         end
-        return offsetrange(t,frame_in)#,to_collect)
-    else
-        t = fill(NaN,window_s*fps*2+1)
-        println("Session $(Session) not found in cam_dict")
-        return offsetrange(t,window_s*fps+1)#,to_collect)
+        o = Recombinase.offsetrange(v,frame_in,to_collect)
+        return o
     end
-end
-function generate_offsets2(cam_dict::OrderedDict,session::String,frame_in::Int;window_s =30,fps = 50)
-    t = fill(NaN,length(cam_dict[session]))
-    off = Recombinase.offsetrange(t,frame_in)
-end
-
-
-"""
-`add_offsets(dic::OrderedDict,data::IndexedTables.IndexedTable)`
-
-Widget to apply the function generate_offsets to a `data` table and a matchind dictionary `dic` of traces.
-Allignment alternatives are offer among the columns that contain Int values.
-"""
-function add_offsets(dic::OrderedDict,data::IndexedTables.IndexedTable)
-    mask = [eltype(column(data,x)) == Int for x in colnames(data)]
-    col_names = colnames(data)[mask]
-    t = table(columns(data,colnames(data)[mask]))
-    allignment_option = dropdown(collect(colnames(t)),label = " Allign on");
-    el1 = node(:div,  "Time window in ± seconds")
-    seconds = spinbox(value=30)
-    el2 = node(:div,  "Data rate in Hz")
-    hertz = spinbox(value= 50)
-    output = Observables.@map @transform data {Offsets = Recombinase.offsetrange(fill(NaN,length(dic[:Session])),cols(&allignment_option))}
-    # output =  Observables.@map @transform data {Offsets = generate_offsets2(dic,:Session,cols(&allignment_option);window_s = Int64(&seconds),fps = Int64(&hertz))}
-    wdg = Widget(["Allignment" => allignment_option, "Window"=>seconds, "Rate"=>hertz ],output = observe(output))
-    @layout! wdg vbox(:Allignment,el1,:Window,el2,:Rate)
 end

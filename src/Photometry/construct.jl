@@ -21,8 +21,15 @@ function construct_photo(dic, t)
     wdg[:Regression] = togglecontent(appearance,value = false)
 
     on(wdg[:Collect]) do x
-        trace = @transform t[] {Signal = Guilia.compute_trace(dic,:Session,wdg)}
-        wdg.output[] = trace
+        collection = @with t[] union(:Session)
+        for ses in collection
+            dic[ses] = @transform_vec dic[ses] {Signal = Guilia.process_trace(dic,ses,wdg)}
+        end
+        prov = JuliaDBMeta.@groupby t[] :Session {Signal = Guilia.take_sig(dic[_.key.Session])}
+        t[] = join(t[],prov,lkey=:Session,rkey=:Session)
+        wdg.output = t
+        # trace = @transform t[] {Signal = Guilia.compute_trace(dic,:Session,wdg)}
+        # wdg.output[] = trace
     end
 
     wdg[:Shift] = button(label = "Adjust Offset")

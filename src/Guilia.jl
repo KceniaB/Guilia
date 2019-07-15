@@ -4,12 +4,27 @@ using Reexport
 @reexport using TableWidgets
 @reexport using Interact
 @reexport using Blink
-@reexport using ProcessPhotometry
+#@reexport using ProcessPhotometry
+@reexport using JuliaDBMeta
 @reexport using OnlineStats
 @reexport using OffsetArrays
+@reexport using ShiftedArrays
+@reexport using Recombinase
+@reexport using StructArrays
+@reexport using IndexedTables
+@reexport using WeakRefStrings
+
+using Images
+using BSON
+using OrderedCollections
+
+
+using FillArrays
 using Observables
-using Recombinase: offsetrange
 import Observables: AbstractObservable
+using Recombinase: offsetrange
+
+
 
 include("body.jl")
 include("loading.jl")

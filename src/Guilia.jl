@@ -37,7 +37,7 @@ include(joinpath("Photometry","construct.jl"))
 
  export launch
  export carica
- export generate_offsets, add_offsets
+ export time_offsets, events_offsets
  export collect_traces
  export sliding_f0
  export regress_trace

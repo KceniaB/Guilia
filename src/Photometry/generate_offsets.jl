@@ -8,9 +8,9 @@ In case the column Trace is not present return an array of NaNs of the
 required size.
 """
 
-function generate_offsets(dic,session,frame_in,wdg)
-    v = collect(1:length(dic[session]))
-    if !wdg[:Time_slice][] & !wdg[:Event_slice][]
+function time_offsets(dimension,frame_in,wdg)
+    v = collect(1:dimension)
+    if !wdg[:Time_slice][]
         o = Recombinase.offsetrange(v,frame_in)
         return o
     elseif wdg[:Time_slice][]
@@ -25,4 +25,22 @@ function generate_offsets(dic,session,frame_in,wdg)
         o = Recombinase.offsetrange(v,frame_in,to_collect)
         return o
     end
+end
+
+
+
+function events_offsets(dimension,frame_in,start_ev,stop_ev,wdg)
+    v = collect(1:dimension)
+    #the first in is defined as 3 sec before the first event
+    #the last in is defined as 3 sec after the last event
+    idxs = table((
+    Center = frame_in,
+    Starts = lag(start_ev,default = start_ev[1]-1*wdg[:Rate][]),
+    Stops = lead(stop_ev,default = stop_ev[end]+1*wdg[:Rate][])
+    ))
+    idxs = @apply idxs begin
+        @transform {Ranges = range(:Starts,stop = :Stops)}
+        @transform {Offsets = Recombinase.offsetrange(v,:Center,:Ranges)}
+    end
+    return column(idxs, :Offsets)
 end

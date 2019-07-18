@@ -14,6 +14,7 @@ using Reexport
 @reexport using StructArrays
 @reexport using IndexedTables
 @reexport using WeakRefStrings
+@reexport using FillArrays
 
 using Images
 using BSON
@@ -21,7 +22,6 @@ using FileIO
 using OrderedCollections
 
 
-using FillArrays
 using Observables
 import Observables: AbstractObservable
 using StatsPlots

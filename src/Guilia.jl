@@ -6,6 +6,7 @@ using Reexport
 @reexport using Blink
 #@reexport using ProcessPhotometry
 @reexport using JuliaDBMeta
+@reexport using DataFrames
 @reexport using OnlineStats
 @reexport using OffsetArrays
 @reexport using ShiftedArrays
@@ -16,12 +17,14 @@ using Reexport
 
 using Images
 using BSON
+using FileIO
 using OrderedCollections
 
 
 using FillArrays
 using Observables
 import Observables: AbstractObservable
+using StatsPlots
 using Recombinase: offsetrange
 
 

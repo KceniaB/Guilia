@@ -48,8 +48,6 @@ function construct_photo(dic, t)
     wdg[:Time_slice] = togglecontent(allignment_layout, value = false)
 
 
-
-
     on(wdg[:Shift]) do x
         allign_on = wdg[:Allignment][]
         if wdg[:Event_slice][]

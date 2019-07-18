@@ -12,6 +12,16 @@ function carica(filename)
         data = dictionary[collect(keys(dictionary))[1]]
         return data
     elseif file_type == "jld2"
-        table(Flipping.carica(filename))
+        file = FileIO.load(filename)
+        if isa(file, Dict)
+            data = file[collect(keys(file))[1]]
+            data = table(data)
+        elseif file_type == "csv"
+            data = JuliaDB.load(filename)
+            return data
+        else
+            println("file type unknown")
+            return nothing
+        end
     end
 end

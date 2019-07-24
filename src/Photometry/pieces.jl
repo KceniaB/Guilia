@@ -1,15 +1,13 @@
-function construct_photo(dic, t)
+function extract_traces(dic, t)
     t isa Observables.AbstractObservable || (t = Observable{Any}(t))
 
-    wdg = Widget{:Add_signals}(output = Observable{Any}(t[]))
+    wdg = Widget{:Add_traces}(output = Observable{Any}(t[]))
 
     wdg[:Collect_Traces] = button(label = "Collect Traces")
     wdg[:Signal] = dropdown(dic["trace_list"],label = " Select Trace")
     wdg[:Rate] = spinbox(value=50)
     mask_string = [eltype(column(t[],x)) == String for x in colnames(t[])]
     wdg[:Match] =  dropdown(collect(colnames(t[])[mask_string]))
-    appearance_setting = hbox(wdg[:Signal],vbox("Data Rate in Hz",wdg[:Rate]),vbox("Connect by",wdg[:Match]))
-    layout_trace = vbox(wdg[:Collect_Traces],appearance_setting)
 
 
     wdg[:Gap] = spinbox(value = 5)
@@ -32,6 +30,37 @@ function construct_photo(dic, t)
         t[] = join(t[],prov,lkey=:Session,rkey=:Session)
         wdg.output = t
     end
+    layout_trace = vbox(
+                        wdg[:Collect_Traces],
+                        hbox(
+                            wdg[:Signal],
+                            vbox(
+                                "Data Rate in Hz",
+                                wdg[:Rate]
+                                ),
+                            vbox(
+                                "Connect by",
+                                wdg[:Match]
+                                )
+                            )
+                        )
+
+    layout_adjustment = vbox(
+                        "Sliding Normalization",
+                        wdg[:Sliding_norm],
+                        "Regress signal",
+                        wdg[:Regression],
+                        wdg[:Regressor]
+                        )
+
+    @layout! wdg vbox(layout_trace,vskip(1em),layout_adjustment)
+end
+
+
+function generate_offsets(dic,t)
+    t isa Observables.AbstractObservable || (t = Observable{Any}(t))
+
+    wdg = Widget{:Add_offsets}(output = Observable{Any}(t[]))
 
     wdg[:Shift] = button(label = "Adjust Offset")
     mask = [eltype(column(t[],x)) == Int for x in colnames(t[])]
@@ -66,52 +95,35 @@ function construct_photo(dic, t)
         wdg.output = t
     end
 
-    wdg[:Collect_signal] = button(label = "Collect Signal")
-    wdg[:Vis_range_start] = spinbox(value = -2*wdg[:Rate][])
-    wdg[:Vis_range_stop] = spinbox(value = 2*wdg[:Rate][])
-
-    on(wdg[:Collect_signal]) do x
-        window_start = wdg[:Vis_range_start][]
-        window_stop = wdg[:Vis_range_stop][]
-        t[] = @apply begin
-            @transform {Output = (:Signal,:Offsets)}
-            @transform {View = range(window_start,step =1,stop = window_stop)}
-        end
-        wdg.output = t
-    end
-
-
-    layout_adjustment = vbox(
-                        "Sliding Normalization",
-                        wdg[:Sliding_norm],
-                        "Regress signal",
-                        wdg[:Regression],
-                        wdg[:Regressor]
+    @layout! wdg vbox(
+                    :Shift,
+                    "Allign on",
+                    :Allignment,
+                    "Slicing Type",
+                    hbox(
+                        :Event_slice,
+                        "Events slicing"
+                        ),
+                    hbox(
+                        :Time_slice,
+                        "Time slicing"
                         )
-        layout_shift = vbox(
-                        wdg[:Shift],
-                        "Allign on",
-                        wdg[:Allignment],
-                        "Slicing Type",
-                        hbox(
-                            wdg[:Event_slice],
-                            "Events slicing"
-                            ),
-                        hbox(
-                            wdg[:Time_slice],
-                            "Time slicing"
-                            )
-                        )
-        layout_ouput = vbox(
-                        wdg[:Collect_signal],
-                        "Set visualization period in seconds",
-                        wdg[:Vis_range_start],
-                        wdg[:Vis_range_stop]
-                        )
+                    )
+end
 
-    col1 = vbox(layout_trace,layout_adjustment,layout_shift)
+function construct_signal(dic,t)
+    t isa Observables.AbstractObservable || (t = Observable{Any}(t))
 
-    @layout! wdg hbox(col1,hskip(1em),layout_ouput)
+    wdg = Widget{:Add_signals}(output = Observable{Any}(t[]))
 
-    wdg
+    wdg[:Traces] = Observables.@map traces_extraction(cam,&t)
+    wdg[:Offsets] = Observables.@map generate_offsets(cam,&t)
+
+    connect!(wdg[:Offsets],wdg.output)
+
+    @layout! wdg vbox(
+                    :Traces,
+                    :Offsets
+                    )
+
 end

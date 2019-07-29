@@ -2,9 +2,9 @@ function carica_tab(s::String)
     table(Guilia.carica(s))
 end
 
-function mygui(fn)
+function mygui(fn, categorical_thrs)
     data = Guilia.carica(fn)
-    filters = selectors(data,threshold = 10);
+    filters = selectors(data,threshold = categorical_thrs);
     editor = dataeditor(filters);
     viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
 
@@ -18,14 +18,14 @@ function mygui(fn)
 end
 
 ##
-function launch()
+function launch(;categorical_thrs = 10)
     f  = filepicker();
     datagui = Observable{Any}("Load a file")
     saver = Interact.savedialog()
     on(saver) do fn
         savefig(datagui[][],saver[]);
     end
-    map!(mygui, datagui, f)
+    map!(mygui, datagui, f, categorical_thrs)
 
     w = Window()
     body!(w, Widgets.div(hbox(f, saver), datagui))

@@ -7,17 +7,17 @@ around `frame_in`. The size of the array is define by `± windows_s*fps`.
 In case the column Trace is not present return an array of NaNs of the
 required size.
 """
-function collect_traces(cam_dict::OrderedDict,session::String,trace::Symbol)
-    if session in keys(cam_dict)
-        if trace in colnames(cam_dict[session])
-            t = column(cam_dict[session],trace)
+function collect_traces(dic::OrderedDict,session::String,trace::Symbol)
+    if session in keys(dic)
+        if trace in colnames(dic[session])
+            t = column(dic[session],trace)
             return t
         else
-            return fill(NaN,length(cam[session]))
+            return fill(NaN,length(dic[session]))
         end
     else
-        println("Session $(Session) not found in cam_dict")
-        return fill(NaN,length(cam[session]))
+        println("Session $(Session) not found in dic")
+        return fill(NaN,length(dic[session]))
     end
 end
 

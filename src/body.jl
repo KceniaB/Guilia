@@ -18,6 +18,12 @@ function mygui(fn, categorical_thrs)
 end
 
 ##
+"""
+´launch(;categorical_thrs = 10)´
+
+launch a gui with filters and editor to plot through recombinase.
+Use categorical_thrs to determined how many maximum unique value in an array determined if its continouos or categorical
+"""
 function launch(;categorical_thrs = 10)
     f  = filepicker();
     datagui = Observable{Any}("Load a file")

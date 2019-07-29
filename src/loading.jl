@@ -10,7 +10,7 @@ function carica(filename)
     if  file_type == "jld"
         dictionary = BSON.load(filename)
         data = dictionary[collect(keys(dictionary))[1]]
-        return data
+        return table(columns(data))
     elseif file_type == "jld2"
         file = FileIO.load(filename)
         if isa(file, Dict)
@@ -18,7 +18,7 @@ function carica(filename)
             data = table(data)
         elseif file_type == "csv"
             data = JuliaDB.load(filename)
-            return data
+            return table(columns(data))
         else
             println("file type unknown")
             return nothing

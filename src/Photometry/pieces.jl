@@ -56,7 +56,6 @@ function extract_traces(dic, t)
     @layout! wdg vbox(layout_trace,vskip(1em),layout_adjustment)
 end
 
-
 function generate_offsets(dic,t)
     t isa Observables.AbstractObservable || (t = Observable{Any}(t))
 

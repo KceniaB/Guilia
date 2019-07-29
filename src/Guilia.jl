@@ -18,6 +18,7 @@ using Reexport
 @reexport using FillArrays
 
 using Images
+using Tables
 using BSON
 using FileIO
 using OrderedCollections
@@ -38,6 +39,7 @@ include(joinpath("Photometry","sliding_mean.jl"))
 include(joinpath("Photometry","regression.jl"))
 include(joinpath("Photometry","construct.jl"))
 include(joinpath("Photometry","pieces.jl"))
+include(joinpath("Photometry","recombinase_gui.jl"))
 include(joinpath("Photometry","utilities.jl"))
 
  export launch
@@ -47,5 +49,6 @@ include(joinpath("Photometry","utilities.jl"))
  export sliding_f0
  export regress_trace
  export construct_photo
+ export gui3
 
 end

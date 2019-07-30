@@ -82,7 +82,8 @@ function generate_offsets_w(dic,t)
 
     wdg[:Start_event] =  dropdown(col_names)
     wdg[:Stop_event] =  dropdown(col_names)
-    events_layout = hbox(vbox("Start at previous",wdg[:Start_event]),vbox("Stop at next",wdg[:Stop_event]))
+    wdg[:Rate] = spinbox(value=50)
+    events_layout = hbox(vbox("Start at previous",wdg[:Start_event]),vbox("Stop at next",wdg[:Stop_event]),vbox("Rate",wdg[:Rate]))
     wdg[:Event_slice] =  togglecontent(events_layout, value = false)
 
     wdg[:Slice_sec] = spinbox(value=30)
@@ -114,13 +115,14 @@ end
 """
 function generate_offsets(wdg,t,dic)
     allign_on = wdg[:Allignment][]
+    rate = wdg[:Rate][]
     if wdg[:Event_slice][]
         prov = @groupby t :Session {Length_data = length(dic[_.key.Session])}
         t = join(t,prov,lkey=:Session,rkey=:Session)
         start_event = wdg[:Start_event][]
         stop_event = wdg[:Stop_event][]
         t = @apply t (:Session) flatten = true begin
-            @transform_vec {Offsets = Guilia.events_offsets(:Length_data[1],cols(allign_on),cols(start_event),cols(stop_event),wdg)}
+            @transform_vec {Offsets = Guilia.events_offsets(:Length_data[1],cols(allign_on),cols(start_event),cols(stop_event),rate)}
         end
     elseif wdg[:Time_slice][]
         t = @apply t @transform {Offsets = time_offsets(length(dic[:Session]),cols(allign_on),wdg)}

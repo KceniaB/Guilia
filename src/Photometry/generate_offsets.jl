@@ -29,14 +29,14 @@ end
 
 
 
-function events_offsets(dimension,frame_in,start_ev,stop_ev,wdg)
+function events_offsets(dimension,frame_in,start_ev,stop_ev,rate)
     v = collect(1:dimension)
     #the first in is defined as 3 sec before the first event
     #the last in is defined as 3 sec after the last event
     idxs = table((
     Center = frame_in,
-    Starts = lag(start_ev,default = start_ev[1]-1*wdg[:Rate][]),
-    Stops = lead(stop_ev,default = stop_ev[end]+1*wdg[:Rate][])
+    Starts = lag(start_ev,default = start_ev[1]-1*rate),
+    Stops = lead(stop_ev,default = stop_ev[end]+1*rate)
     ))
     idxs = @apply idxs begin
         @transform {Ranges = range(:Starts,stop = :Stops)}

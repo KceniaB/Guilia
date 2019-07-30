@@ -1,7 +1,3 @@
-function carica_tab(s::String)
-    table(Guilia.carica(s))
-end
-
 function mygui(fn, categorical_thrs)
     data = Guilia.carica(fn)
     filters = selectors(data,threshold = categorical_thrs);

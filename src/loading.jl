@@ -10,18 +10,15 @@ function carica(filename)
     if  file_type == "jld"
         dictionary = BSON.load(filename)
         data = dictionary[collect(keys(dictionary))[1]]
-        return table(columns(data))
+        return data isa AbstractDict ? data : table(columns(data))
     elseif file_type == "jld2"
         file = FileIO.load(filename)
-        if isa(file, Dict)
-            data = file[collect(keys(file))[1]]
-            data = table(data)
-        elseif file_type == "csv"
-            data = JuliaDB.load(filename)
-            return table(columns(data))
-        else
-            println("file type unknown")
-            return nothing
-        end
+        data = file[collect(keys(file))[1]]
+        data = table(data)
+    elseif file_type == "csv"        
+        return table(CSVFiles.load(filename))
+    else
+        println("file type unknown")
+        return nothing
     end
 end

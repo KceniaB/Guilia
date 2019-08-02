@@ -48,7 +48,8 @@ include(joinpath("Photometry","utilities.jl"))
  export collect_traces
  export sliding_f0
  export regress_trace
+ export offset_window
  #export construct_photo
- export gui3
+ export gui3,gui4
 
 end

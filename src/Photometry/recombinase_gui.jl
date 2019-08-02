@@ -12,14 +12,14 @@ const analysis_options_hacked = OrderedDict(
     "Density" => Recombinase.density,
     "Hazard" => Recombinase.hazard,
     "Prediction" => Recombinase.prediction,
-    "PredictionWithAxis" => Recombinase.prediction(axis = -60:60),
-)
+    "PredictionWithAxis" => Recombinase.prediction(axis = -60:60))
 
 function is_small(col, n = 100)
-    for (ind, _) in enumerate(IterTools.distinct(col))
-        ind > n && return false
-    end
-    return true
+    col isa StringArray || col isa AbstractArray{Bool} || col == Tuple{}()
+    # for (ind, _) in enumerate(IterTools.distinct(col))
+    #     ind > n && return false
+    # end
+    # return true
 end
 
 function take_small(t, vec::AbstractVector{Symbol}, n = 100)
@@ -56,7 +56,8 @@ function gui3(data′, plotters; postprocess = NamedTuple(), vectorialaxis = Obs
     error = dropdown(Observables.@map(vcat(Recombinase.automatic, &ns)), label="Error")
     styles = collect(keys(Recombinase.style_dict))
     sort!(styles)
-    smallns = map(take_small, data, maybens)
+    smallns =  map(take_small, data, maybens)
+    #smallns[] = pushfirst!(smallns[],Symbol())
     splitters = [dropdown(smallns, label = string(style)) for style in styles]
     plotter = dropdown(plotters, label = "Plotter")
     ribbon = toggle("Ribbon", value = false)
@@ -106,6 +107,83 @@ function gui3(data′, plotters; postprocess = NamedTuple(), vectorialaxis = Obs
                                           :plotter
                                          ),
                                     :ribbon,
+                                    :plot_button,
+                                    _hbox(
+                                          _vbox(:splitters...),
+                                          _vbox(output, :plot_kwargs)
+                                         )
+                                   )
+end
+
+####
+function gui4(data′, plotters; postprocess = NamedTuple())
+    (data′ isa Observables.AbstractObservable) || (data′ = Observable{Any}(data′))
+    data = Observables.@map table(&data′, copy = false, presorted = true)
+    ns = Observables.@map collect(colnames(&data))
+    maybens = Observables.@map vcat(Symbol(), &ns)
+    xaxis = dropdown(ns,label = "X")
+    yaxis = dropdown(maybens,label = "Y")
+    an_opt = dropdown(analysis_options_hacked, label = "Analysis")
+    axis_type = dropdown([:automatic, :continuous, :discrete, :vectorial], label = "Axis type")
+    error = dropdown(Observables.@map(vcat(Recombinase.automatic, &ns)), label="Error")
+    styles = collect(keys(Recombinase.style_dict))
+    sort!(styles)
+    smallns =  map(take_small, data, maybens)
+    splitters = [dropdown(smallns, label = string(style)) for style in styles]
+    plotter = dropdown(plotters, label = "Plotter")
+    ribbon = toggle("Ribbon", value = false)
+    btn = button("Plot")
+    output = Observable{Any}("Set the dropdown menus and press plot to get started.")
+    plot_kwargs = Widgets.textbox("Insert optional plot attributes")
+    window_start = spinbox(value = -50, label = "Start view")
+    window_stop = spinbox(value = 50, label = "Stop view")
+    vectorialaxis = offset_window()
+    Observables.@map! output begin
+        &btn
+        select = yaxis[] == Symbol() ? xaxis[] : (xaxis[], yaxis[])
+        grps = Dict(key => val[] for (key, val) in zip(styles, splitters) if val[] != Symbol())
+        an = an_opt[]
+        an == analysis_options_hacked["PredictionWithAxis"] && (an = an(axis = vectorialaxis[]))
+        args, kwargs = Recombinase.series2D(
+                                an,
+                                &data,
+                                Recombinase.Group(; grps...);
+                                postprocess = postprocess,
+                                select = select,
+                                error = error[],
+                                ribbon = ribbon[]
+                               )
+        plotter[](args...; kwargs..., string2kwargs(plot_kwargs[])...)
+    end
+    ui = Widget(
+        OrderedDict(
+            :vectorialaxis => vectorialaxis,
+            :xaxis => xaxis,
+            :yaxis => yaxis,
+            :analysis => an_opt,
+            :axis_type => axis_type,
+            :error => error,
+            :plotter => plotter,
+            :plot_button => btn,
+            :plot_kwargs => plot_kwargs,
+            :ribbon => ribbon,
+            :splitters => splitters,
+        ),
+        output = output
+    )
+
+    Widgets.@layout! ui Widgets.div(
+                                    _hbox(
+                                          :xaxis,
+                                          :yaxis,
+                                          :analysis,
+                                          :axis_type,
+                                          :error,
+                                          :plotter
+                                         ),
+                                    :ribbon,
+                                    :vectorialaxis,
+                                    vskip(1em),
                                     :plot_button,
                                     _hbox(
                                           _vbox(:splitters...),

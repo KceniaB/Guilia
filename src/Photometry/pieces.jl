@@ -25,7 +25,7 @@ function extract_traces_w(dic, t)
     appearance_reg = vbox(wdg[:Reference],hbox(wdg[:Local],wdg[:Reg_interval]))
     wdg[:Regression] = togglecontent(appearance_reg,value = false)
 
-    output = Interact.@map  (&wdg[:Collect_Traces];extract_traces(wdg,&t,dic))
+    output = Interact.@map (&wdg[:Collect_Traces];extract_traces(wdg,&t,dic))
     connect!(output,wdg.output)
 
     layout_trace = vbox(
@@ -63,8 +63,7 @@ function extract_traces(wdg,t,dic)
         dic[ses] = @transform_vec dic[ses] {Signal = Guilia.process_trace(dic,ses,wdg)}
     end
     prov = JuliaDBMeta.@groupby t :Session {Signal = Guilia.take_sig(dic[_.key.Session])}
-    t = join(t,prov,lkey=:Session,rkey=:Session)
-    return t
+    return join(t,prov,lkey=:Session,rkey=:Session)
 end
 
 """
@@ -90,7 +89,7 @@ function generate_offsets_w(dic,t)
     allignment_layout = vbox("Time window in ± seconds", wdg[:Slice_sec])
     wdg[:Time_slice] = togglecontent(allignment_layout, value = false)
 
-    output = Interact.@map  (&wdg[:Shift];generate_offsets(wdg,&t,dic))
+    output = Interact.@map (&wdg[:Shift];generate_offsets(wdg,&t,dic))
     connect!(output,wdg.output)
 
     @layout! wdg vbox(

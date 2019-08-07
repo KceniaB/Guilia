@@ -2,7 +2,7 @@ function mygui(fn, categorical_thrs)
     data = Guilia.carica(fn)
     filters = selectors(data,threshold = categorical_thrs);
     editor = dataeditor(filters);
-    viewer = Recombinase.gui(editor, [plot, scatter, groupedbar]);
+    viewer = Recombinase.gui(categorizer, [plot, scatter, groupedbar]);
 
     components = OrderedDict(
         :filters => filters,
@@ -12,7 +12,27 @@ function mygui(fn, categorical_thrs)
     lt = tabulator(components);
     return Widget(components, layout = _ -> lt, output = observe(viewer));
 end
+##
+function mygui_signal(t_name,d_name; thrs = 10)
+    t_name isa Observables.AbstractObservable || (t_name = Observable{Any}(t_name))
+    d_name isa Observables.AbstractObservable || (d_name = Observable{Any}(d_name))
 
+    data = Guilia.carica(t_name[])
+    dic = Guilia.carica(d_name[])
+    filters = selectors(data,threshold = thrs);
+    signals = Guilia.construct_signal(dic,filters);
+    categorizer = categorify_w(signals);
+    viewer = gui4(categorizer,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
+
+    components = OrderedDict(
+        :filters => filters,
+        :signals => signals,
+        :categorizer => categorizer,
+        :viewer => viewer)
+
+    lt = tabulator(components);
+    return Widget(components, layout = _ -> lt, output = observe(viewer));
+end
 ##
 """
 ´launch(;categorical_thrs = 10)´
@@ -30,5 +50,33 @@ function launch(;categorical_thrs = 10)
     map!(mygui, datagui, f, categorical_thrs)
 
     w = Window()
-    body!(w, Widgets.div(hbox(f, saver), datagui))
+    body!(w, Widgets.div(hbox(hskip(1em), f, hskip(1em), saver), datagui))
+end
+##
+function launch_signal(;categorical_thrs = 10)
+    t = filepicker();
+    d = filepicker();
+    datagui = Observable{Any}("Load a file")
+    saver = Interact.savedialog()
+    on(saver) do fn
+        savefig(datagui[][],saver[]);
+    end
+    loader = button(label="Load")
+    on(loader) do x
+         datagui[] = mygui_signal(t,d,thrs = categorical_thrs)
+    end
+    # datagui = Interact.@map (&loader; mygui_signal(t,d,thrs = categorical_thrs))
+
+    w = Window()
+    body!(w,Widgets.div(
+                        vbox(
+                            hbox(
+                                vbox("Table",t),
+                                vbox("Dictionary",d),
+                                vbox(vskip(1em),hbox(loader,saver))
+                                )
+                            ,datagui
+                            )
+                        )
+                    )
 end

@@ -29,14 +29,15 @@ end
 
 
 
-function events_offsets(dimension,frame_in,start_ev,stop_ev,rate)
+function events_offsets(dimension,frame_in,start_event,stop_event,rate)
+    # this is run per session
     v = collect(1:dimension)
-    #the first in is defined as 3 sec before the first event
-    #the last in is defined as 3 sec after the last event
+    #the first in is defined as 1 sec before the first event
+    #the last in is defined as 1 sec after the last event
     idxs = table((
     Center = frame_in,
-    Starts = lag(start_ev,default = start_ev[1]-1*rate),
-    Stops = lead(stop_ev,default = stop_ev[end]+1*rate)
+    Starts = lag(start_event,default = stop_event[1]-1*rate),
+    Stops = lead(stop_event,default = start_event[end]+1*rate)
     ))
     idxs = @apply idxs begin
         @transform {Ranges = range(:Starts,stop = :Stops)}
@@ -85,6 +86,7 @@ function generate_offsets_w(dic,t)
                         "Time slicing"
                         )
                     )
+    return wdg
 end
 
 
@@ -100,7 +102,11 @@ function generate_offsets(wdg,t,dic)
         start_event = wdg[:Start_event][]
         stop_event = wdg[:Stop_event][]
         t = @apply t (:Session) flatten = true begin
-            @transform_vec {Offsets = Guilia.events_offsets(:Length_data[1],cols(allign_on),cols(start_event),cols(stop_event),rate)}
+            @transform_vec {Starts = lag(cols(start_event),default = cols(stop_event)[1]-1*rate)}
+            @transform_vec {Stops = lead(cols(stop_event),default = cols(start_event)[end]+1*rate)}
+            @transform {Ranges = range(:Starts,step = 1,stop = :Stops)}
+            @transform {Offsets = Recombinase.offsetrange(collect(range(1,stop = :Length_data[1])),cols(allign_on),:Ranges)}
+            #@transform_vec {Offsets = Guilia.events_offsets(:Length_data[1],cols(allign_on),cols(start_event),cols(stop_event),rate)}
         end
     elseif wdg[:Time_slice][]
         t = @apply t @transform {Offsets = time_offsets(length(dic[:Session]),cols(allign_on),wdg)}

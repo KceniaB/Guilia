@@ -1,12 +1,13 @@
 function mygui(fn, categorical_thrs)
     data = Guilia.carica(fn)
     filters = selectors(data,threshold = categorical_thrs);
-    editor = dataeditor(filters);
+    #editor = dataeditor(filters);
+    categorizer = categorify_w(filters);
     viewer = Recombinase.gui(categorizer, [plot, scatter, groupedbar]);
 
     components = OrderedDict(
         :filters => filters,
-        :editor => editor,
+        :categorizer => categorizer,
         :viewer => viewer)
 
     lt = tabulator(components);
@@ -19,14 +20,18 @@ function mygui_signal(t_name,d_name; thrs = 10)
 
     data = Guilia.carica(t_name[])
     dic = Guilia.carica(d_name[])
-    filters = selectors(data,threshold = thrs);
-    signals = Guilia.construct_signal(dic,filters);
-    categorizer = categorify_w(signals);
-    viewer = gui4(categorizer,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
+    # filters = selectors(data,threshold = thrs);
+    # signals = Guilia.construct_signal(dic,filters);
+    # categorizer = categorify_w(signals);
+    # viewer = gui4(categorizer,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
+    signals = Guilia.construct_signal(dic,data);
+    filters = selectors(signals,threshold = thrs);
+    categorizer = categorify_w(filters);
+    viewer = gui_signals(categorizer,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
 
     components = OrderedDict(
-        :filters => filters,
         :signals => signals,
+        :filters => filters,
         :categorizer => categorizer,
         :viewer => viewer)
 
@@ -72,11 +77,14 @@ function launch_signal(;categorical_thrs = 10)
                         vbox(
                             hbox(
                                 vbox("Table",t),
+                                hskip(1em),
                                 vbox("Dictionary",d),
-                                vbox(vskip(1em),hbox(loader,saver))
+                                hskip(1em),
+                                vbox(vskip(1em),hbox(loader,hskip(1em),saver))
                                 )
                             ,datagui
                             )
                         )
                     )
+    return datagui
 end

@@ -27,18 +27,12 @@ _tuple(t::Tuple) = t
 _tuple(t) = tuple(t)
 
 """
-`gui(data, plotters; postprocess = NamedTuple())`
+`gui_signals(data, plotters; postprocess = NamedTuple())`
 Create a gui around `data::IndexedTable` given a list of plotting
 functions plotters.
 ## Examples
-```julia
-using StatsPlots, Recombinase, JuliaDB, Interact
-school = loadtable(joinpath(Recombinase.datafolder, "school.csv"))
-plotters = [plot, scatter, groupedbar]
-Recombinase.gui(school, plotters)
-```
 """
-function gui4(data′, plotters; postprocess = NamedTuple())
+function gui_signals(data′, plotters; postprocess = NamedTuple())
     (data′ isa Observables.AbstractObservable) || (data′ = Observable{Any}(data′))
     data = Observables.@map table(&data′, copy = false, presorted = true)
     ns = Observables.@map sort(collect(colnames(&data)))
@@ -57,8 +51,8 @@ function gui4(data′, plotters; postprocess = NamedTuple())
     btn = button("Plot")
     output = Observable{Any}("Set the dropdown menus and press plot to get started.")
     plot_kwargs = Widgets.textbox("Insert optional plot attributes")
-    window_start = spinbox(value = -50, label = "Start view")
-    window_stop = spinbox(value = 50, label = "Stop view")
+    # window_start = spinbox(value = -50, label = "Start view")
+    # window_stop = spinbox(value = 50, label = "Stop view")
     vectorialaxis = offset_window()
     Observables.@map! output begin
         &btn

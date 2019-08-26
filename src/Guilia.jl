@@ -34,6 +34,7 @@ using Recombinase: offsetrange
 include("body.jl")
 include("loading.jl")
 include("categorize.jl")
+include("separate.jl")
 include(joinpath("Photometry","sliding_mean.jl"))
 include(joinpath("Photometry","regression.jl"))
 include(joinpath("Photometry","utilities.jl"))
@@ -46,6 +47,7 @@ include(joinpath("Photometry","recombinase_gui.jl"))
  export launch, launch_signal
  export carica
  export categorify_w, categorize
+ export separate_w, separate
  export time_offsets, events_offsets
  export collect_traces
  export sliding_f0

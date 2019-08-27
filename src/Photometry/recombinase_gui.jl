@@ -61,8 +61,9 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
         grps = Dict(key => val[] for (key, val) in zip(styles, splitters) if val[] != Symbol())
         an = an_opt[]
         an == analysis_options_hacked["PredictionWithAxis"] && (an = an(axis = vectorialaxis[]))
+        an_inf = isnothing(an) ? nothing : Recombinase.Analysis{axis_type[]}(an)
         args, kwargs = Recombinase.series2D(
-                                an,
+                                an_inf,
                                 &data,
                                 Recombinase.Group(; grps...);
                                 postprocess = postprocess,
@@ -85,7 +86,7 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
             :ribbon => ribbon,
             :splitters => splitters,
             :typed_attributes => typed_attributes,
-            :attributed => attributes,
+            :attributes => attributes,
             :plot_kwargs => plot_kwargs,
         ),
         output = output

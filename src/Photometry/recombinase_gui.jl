@@ -53,7 +53,7 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
     # plot_kwargs = Widgets.textbox("Insert optional plot attributes")
     typed_attributes = Widgets.textbox("Insert optional plot attributes")
     attributes = plot_attributes_w()
-    plot_kwargs = Interact.@map isempty(&typed_attributes) ? &attributes : $attributes[] * "," * &typed_attributes
+    plot_kwargs = Interact.@map isempty(&typed_attributes) ? &attributes : &attributes * "," * &typed_attributes
     vectorialaxis = offset_window()
     Observables.@map! output begin
         &btn
@@ -84,7 +84,9 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
             :plot_button => btn,
             :ribbon => ribbon,
             :splitters => splitters,
-            :attributes => plot_kwargs,
+            :typed_attributes => typed_attributes,
+            :attributed => attributes,
+            :plot_kwargs => plot_kwargs,
         ),
         output = output
     )
@@ -104,7 +106,7 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
                                     :plot_button,
                                     _hbox(
                                           _vbox(:splitters...),
-                                          _vbox(output, :plot_kwargs),
+                                          _vbox(output, :typed_attributes),
                                           :attributes
                                          )
                                    )

@@ -3,7 +3,7 @@ function mygui(fn, categorical_thrs)
     filters = selectors(data,threshold = categorical_thrs);
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
-    viewer = Recombinase.gui(separator, [plot, scatter, groupedbar]);
+    viewer = gui_signals(separator, [plot, scatter, groupedbar]);
 
     components = OrderedDict(
         :filters => filters,

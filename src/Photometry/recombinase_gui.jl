@@ -51,8 +51,7 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
     btn = button("Plot")
     output = Observable{Any}("Set the dropdown menus and press plot to get started.")
     plot_kwargs = Widgets.textbox("Insert optional plot attributes")
-    # window_start = spinbox(value = -50, label = "Start view")
-    # window_stop = spinbox(value = 50, label = "Stop view")
+    attributes = plot_attributes_w()
     vectorialaxis = offset_window()
     Observables.@map! output begin
         &btn
@@ -69,7 +68,7 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
                                 error = error[],
                                 ribbon = ribbon[]
                                )
-        plotter[](args...; kwargs..., string2kwargs(plot_kwargs[])...)
+        plotter[](args...; kwargs..., string2kwargs(attributes[] * "," * plot_kwargs[])...)
     end
     ui = Widget(
         OrderedDict(
@@ -84,6 +83,7 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
             :plot_kwargs => plot_kwargs,
             :ribbon => ribbon,
             :splitters => splitters,
+            :attributes => attributes,
         ),
         output = output
     )
@@ -103,7 +103,8 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
                                     :plot_button,
                                     _hbox(
                                           _vbox(:splitters...),
-                                          _vbox(output, :plot_kwargs)
+                                          _vbox(output, :plot_kwargs),
+                                          :attributes
                                          )
                                    )
 end

@@ -105,9 +105,11 @@ function gui_signals(data′, plotters; postprocess = NamedTuple())
                                     :vectorialaxis,
                                     vskip(1em),
                                     :plot_button,
-                                    _hbox(
-                                          _vbox(:splitters...),
-                                          _vbox(output, :typed_attributes),
+                                    hbox(
+                                          vbox(:splitters...),
+                                          hskip(1em),
+                                          vbox(output, :typed_attributes),
+                                          hskip(1em),
                                           :attributes
                                          )
                                    )

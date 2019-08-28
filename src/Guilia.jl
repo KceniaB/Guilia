@@ -22,7 +22,7 @@ using Tables
 using BSON
 using FileIO
 using OrderedCollections
-using CategoricalArrays
+
 
 using Observables
 import Observables: AbstractObservable

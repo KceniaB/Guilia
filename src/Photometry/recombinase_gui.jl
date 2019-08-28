@@ -32,7 +32,7 @@ Create a gui around `data::IndexedTable` given a list of plotting
 functions plotters.
 ## Examples
 """
-function gui_signals(data′, plotters; postprocess = NamedTuple())
+function customized_gui(data′, plotters; postprocess = NamedTuple())
     (data′ isa Observables.AbstractObservable) || (data′ = Observable{Any}(data′))
     data = Observables.@map table(&data′, copy = false, presorted = true)
     ns = Observables.@map sort(collect(colnames(&data)))

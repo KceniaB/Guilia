@@ -3,7 +3,7 @@ function mygui(fn, categorical_thrs)
     filters = selectors(data,threshold = categorical_thrs);
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
-    viewer = gui_signals(separator, [plot, scatter, groupedbar]);
+    viewer = customized_gui(separator, [plot, scatter, groupedbar]);
 
     components = OrderedDict(
         :filters => filters,
@@ -24,7 +24,7 @@ function mygui_signal(t_name,d_name; thrs = 10)
     filters = selectors(signals,threshold = thrs);
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
-    viewer = gui_signals(separator,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
+    viewer = customized_gui(separator,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
 
     components = OrderedDict(
         :signals => signals,

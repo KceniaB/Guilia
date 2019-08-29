@@ -1,6 +1,6 @@
 function mygui(fn, categorical_thrs)
     data = Guilia.carica(fn)
-    filters = selectors(data,threshold = categorical_thrs);
+    filters = selectors(data,threshold = categorical_thrs,types = Dict(:MouseID => TableWidgets.categorical));
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
     viewer = customized_gui(separator, [plot, scatter, groupedbar]);
@@ -21,7 +21,7 @@ function mygui_signal(t_name,d_name; thrs = 10)
     data = Guilia.carica(t_name[])
     dic = Guilia.carica(d_name[])
     signals = Guilia.construct_signal(dic,data);
-    filters = selectors(signals,threshold = thrs);
+    filters = selectors(signals,threshold = thrs,types = Dict(:MouseID => TableWidgets.categorical));
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
     viewer = customized_gui(separator,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))

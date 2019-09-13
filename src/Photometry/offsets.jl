@@ -32,18 +32,22 @@ end
 function events_offsets(dimension,frame_in,start_event,stop_event,rate)
     # this is run per session
     v = collect(1:dimension)
-    #the first in is defined as 1 sec before the first event
-    #the last in is defined as 1 sec after the last event
-    idxs = table((
-    Center = frame_in,
-    Starts = lag(start_event,default = stop_event[1]-1*rate),
-    Stops = lead(stop_event,default = start_event[end]+1*rate)
-    ))
-    idxs = @apply idxs begin
-        @transform {Ranges = range(:Starts,stop = :Stops)}
-        @transform {Offsets = Recombinase.offsetrange(v,:Center,:Ranges)}
+    if ismissing(frame_in)
+        return
+    else
+        #the first in is defined as 1 sec before the first event
+        #the last in is defined as 1 sec after the last event
+        idxs = table((
+        Center = frame_in,
+        Starts = lag(start_event,default = stop_event[1]-1*rate),
+        Stops = lead(stop_event,default = start_event[end]+1*rate)
+        ))
+        idxs = @apply idxs begin
+            @transform {Ranges = range(:Starts,stop = :Stops)}
+            @transform {Offsets = Recombinase.offsetrange(v,:Center,:Ranges)}
+        end
+        return column(idxs, :Offsets)
     end
-    return column(idxs, :Offsets)
 end
 
 """
@@ -102,6 +106,7 @@ function generate_offsets(wdg,t,dic)
         start_event = wdg[:Start_event][]
         stop_event = wdg[:Stop_event][]
         t = @apply t (:Session) flatten = true begin
+            @where !ismissing(cols(allign_on))
             @transform_vec {Starts = lag(cols(start_event),default = cols(stop_event)[1]-1*rate)}
             @transform_vec {Stops = lead(cols(stop_event),default = cols(start_event)[end]+1*rate)}
             @transform {Ranges = range(:Starts,step = 1,stop = :Stops)}

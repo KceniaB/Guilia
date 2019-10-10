@@ -9,7 +9,7 @@ function plot_attributes_w()
     @layout! wdg hbox(
                     vbox(
                         :Texts,
-                        :Measure
+                        :Measures
                         ),
                     hskip(1em),
                     :Options,
@@ -105,10 +105,11 @@ function optional_attributes()
     wdg = Widget{:Optional_attributes}(output = Observable{Any}(("tick_orientation = :out")))
     wdg[:Tick_dir] = Guilia.optional_attribute("tick_orientation",[:out,:in])
     wdg[:Grid] = Guilia.optional_attribute("grid",[:all,:none,:x,:y])
-    wdg[:Legend] = Guilia.optional_attribute("legend",[:topleft,:topright,:bottomleft,:bottomright])
+    wdg[:Legend] = Guilia.optional_attribute("legend",[:topleft,:topright,:bottomleft,:bottomright,:none, :best, :right, :left, :top, :bottom])
     wdg[:Font] = Guilia.optional_attribute("fontfamily",["bookman","avantgarde","courier","helvetica","newcenturyschlbk","palatino","times"])
-    wdg[:BackGround] = Guilia.optional_attribute("background_color",[:white,:black,:grey,:red,:blue])
-    optional_output = Interact.@map join((&wdg[:Tick_dir], &wdg[:Grid],&wdg[:Legend],&wdg[:Font],&wdg[:BackGround]),",")
+    wdg[:Background] = Guilia.optional_attribute("background_color",[:transparent,:white,:black,:grey,:red,:blue])
+    wdg[:Foreground] = Guilia.optional_attribute("foreground_color",[:black,:white,:grey,:red,:blue,:transparent])
+    optional_output = Interact.@map join((&wdg[:Tick_dir], &wdg[:Grid],&wdg[:Legend],&wdg[:Font],&wdg[:Background],&wdg[:Foreground]),",")
     connect!(optional_output,wdg.output)
     @layout! wdg vbox(
                     :Tick_dir,
@@ -119,7 +120,9 @@ function optional_attributes()
                     vskip(1em),
                     :Font,
                     vskip(1em),
-                    :BackGround
+                    :Background,
+                    vskip(1em),
+                    :Foreground
                     )
     return wdg
 end

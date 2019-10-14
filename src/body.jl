@@ -20,13 +20,15 @@ function mygui_signal(t_name,d_name; thrs = 10)
 
     data = Guilia.carica(t_name[])
     dic = Guilia.carica(d_name[])
-    signals = Guilia.construct_signal(dic,data);
+    gross_filters = selectors(data,threshold = thrs,types = Dict(:MouseID => TableWidgets.categorical));
+    signals = Guilia.construct_signal(dic,gross_filters);
     filters = selectors(signals,threshold = thrs,types = Dict(:MouseID => TableWidgets.categorical));
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
     viewer = customized_gui(separator,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
 
     components = OrderedDict(
+        :trim => gross_filters,
         :signals => signals,
         :filters => filters,
         :editor => hbox(categorizer,separator),

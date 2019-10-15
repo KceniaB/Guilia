@@ -16,6 +16,8 @@ using Reexport
 @reexport using IndexedTables
 @reexport using WeakRefStrings
 @reexport using FillArrays
+using Distributions
+using Distances
 
 using Images
 using Tables
@@ -38,6 +40,7 @@ include("categorize.jl")
 include("separate.jl")
 include("plot_attributes.jl")
 include(joinpath("New_Analysis","counting.jl"))
+include(joinpath("New_Analysis","Gamma.jl"))
 include(joinpath("Photometry","sliding_mean.jl"))
 include(joinpath("Photometry","regression.jl"))
 include(joinpath("Photometry","utilities.jl"))

@@ -38,7 +38,7 @@ function annotate_attribute()
     y = Widgets.spinbox(value = 0.0,label = "y_pos")
     allignment = dropdown([:center,:left,:right],label = "allignment")
     choice = togglecontent(vbox(txt,x,y,allignment))
-    res = Interact.@map &choice ? ("annotations = ($(&x),$(&y),text(\"$(&txt)\",:$(&allignment)))") : ("annotations = \"\" ")
+    res = Interact.@map &choice ? ("annotations = ($(&x),$(&y),text(\"$(&txt)\",:$(&allignment)))") : ("annotations = (0.0,0.0,text(\"\",:center)) ")
 
     wdg = Widget{:Size_attribute}(output = res)
 

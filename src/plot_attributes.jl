@@ -32,19 +32,40 @@ function text_attribute(nome::String)
     @layout! wdg vbox(:attribute,:value)
     return wdg
 end
+function annotate_attribute()
+    txt = Widgets.textbox("Insert title")
+    x = Widgets.spinbox(value = 0.0,label = "x_pos")
+    y = Widgets.spinbox(value = 0.0,label = "y_pos")
+    allignment = dropdown([:center,:left,:right],label = "allignment")
+    choice = togglecontent(vbox(txt,x,y,allignment))
+    res = Interact.@map &choice ? ("annotations = ($(&x),$(&y),text(\"$(&txt)\",:$(&allignment)))") : ("annotations = \"\" ")
+
+    wdg = Widget{:Size_attribute}(output = res)
+
+    wdg[:attribute] = "annotations"
+    wdg[:value] = txt
+    wdg[:x] = x
+    wdg[:y] = y
+    wdg[:allignment] = allignment
+    wdg[:Choice] = choice
+    @layout! wdg vbox(:attribute,:Choice)
+    return wdg
+end
 
 function text_attributes()
     wdg = Widget{:Text_attributes}(output = Observable{Any}(("xlabel = \"x\", ylabel = \"y\"")))
     wdg[:Title] = Guilia.text_attribute("title")
     wdg[:Xlabel] = Guilia.text_attribute("xlabel")
     wdg[:Ylabel] = Guilia.text_attribute("ylabel")
-    text_output = Interact.@map join((&wdg[:Title], &wdg[:Xlabel], &wdg[:Ylabel]),",")
+    wdg[:Annotate] = Guilia.annotate_attribute()
+    text_output = Interact.@map join((&wdg[:Title], &wdg[:Xlabel], &wdg[:Ylabel], &wdg[:Annotate]),",")
 
     connect!(text_output,wdg.output)
     @layout! wdg vbox(
                     :Title,
                     :Xlabel,
-                    :Ylabel
+                    :Ylabel,
+                    :Annotate
                     )
     return wdg
 end
@@ -145,12 +166,16 @@ function value_attributes()
     wdg[:FontSize] = Guilia.value_attribute("tickfontsize",10; default = 10)
     wdg[:LegendFontSize] = Guilia.value_attribute("legendfontsize",10; default = 10)
     wdg[:FillAlpha] = Guilia.value_attribute("fillalpha",0.3; default = 0.3)
-    value_output = Interact.@map join((&wdg[:FontSize], &wdg[:LegendFontSize],&wdg[:FillAlpha]),",")
+    wdg[:Xrotation] = Guilia.value_attribute("xrotation",0; default = 0)
+    wdg[:Yrotation] = Guilia.value_attribute("yrotation",0; default = 0)
+    value_output = Interact.@map join((&wdg[:FontSize], &wdg[:LegendFontSize],&wdg[:FillAlpha],&wdg[:Xrotation],&wdg[:Yrotation]),",")
     connect!(value_output,wdg.output)
     @layout! wdg vbox(
                     :FontSize,
                     :LegendFontSize,
-                    :FillAlpha
+                    :FillAlpha,
+                    :Xrotation,
+                    :Yrotation
                     )
     return wdg
 end

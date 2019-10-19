@@ -55,6 +55,7 @@ function launch(;categorical_thrs = 10)
 
     w = Window()
     body!(w, Widgets.div(hbox(hskip(1em), f, hskip(1em), saver), datagui))
+    return datagui
 end
 ##
 function launch_signal(;categorical_thrs = 10)

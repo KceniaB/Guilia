@@ -77,6 +77,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     end
     ui = Widget(
         OrderedDict(
+            :data => data,
             :vectorialaxis => vectorialaxis,
             :xaxis => xaxis,
             :yaxis => yaxis,

@@ -58,13 +58,14 @@ end
 `categorize`
 """
 function custom_cut(v::AbstractArray,nbins)
-    filtered = v[.!(isnan.(v))]
+    f = [ismissing(x) ? NaN : x for x in v]
+    filtered = f[.!(isnan.(f))]
     step = 1/nbins
-    quantiles = [x*step for x in 1:nbins]
+    quantiles = tuple([x*step for x in 1:nbins]...)
     q = quantile(filtered,quantiles)
-    category =[findfirst(x .<= q) for x in v]
+    category =[findfirst(x .<= q) for x in f]
     nan_category = [x .== nothing ? NaN : x for x in category]
-    bins = string.(nan_category)
+    bins = CategoricalArray(string.(nan_category))
 end
 
 function rename_cat(v)
@@ -75,7 +76,7 @@ function categorize(v::AbstractArray,nbins)
     cat_v = custom_cut(v,nbins)
     res = table((v = v, bin = cat_v))
     dic = OrderedDict(JuliaDB.groupby(Guilia.rename_cat,res, :bin, select = v))
-    return [dic[x] for x in cat_v]
+    return [x*dic[x] for x in cat_v]
 end
 
 function categorize(data::IndexedTables.IndexedTable,binner::NamedTuple)

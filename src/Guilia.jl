@@ -18,6 +18,7 @@ using Reexport
 @reexport using FillArrays
 using Distributions
 using Distances
+using CategoricalArrays
 
 using Images
 using Tables

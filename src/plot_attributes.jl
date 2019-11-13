@@ -1,3 +1,10 @@
+#=
+Widget to select attributes in the plot composed by 3 type of subwidgets
+text attribute
+2 values attribute
+optional attribute
+=#
+
 function plot_attributes_w()
     wdg = Widget{:Plot_attributes}(output = Observable{Any}(("tick_orientation = :out, size = (809,500), fontfamily = \"bookman\"")))
     wdg[:Texts] = text_attributes()

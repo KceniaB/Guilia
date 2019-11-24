@@ -14,7 +14,8 @@ const analysis_options_hacked = OrderedDict(
     "Prediction" => Recombinase.prediction,
     "PredictionWithAxis" => Recombinase.prediction(axis = -60:60),
     "Count" => Guilia.count,
-    "Gamma" => Guilia.Gamma_dist)
+    "Gamma" => Guilia.Gamma_dist,
+    "Μ_σ scatter" => Guilia.scatter_mu_sd)
 
 is_small(col::AbstractArray) = false
 is_small(col::AbstractArray{<:Union{Missing, Bool, AbstractString}}) = true

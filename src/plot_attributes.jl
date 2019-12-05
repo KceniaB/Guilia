@@ -165,14 +165,16 @@ function value_attributes()
     wdg = Widget{:Value_attributes}(output = Observable{Any}(("fillalpha = 0.3")))
     wdg[:FontSize] = Guilia.value_attribute("tickfontsize",10; default = 10)
     wdg[:LegendFontSize] = Guilia.value_attribute("legendfontsize",10; default = 10)
+    wdg[:LineWidth] = Guilia.value_attribute("linewidth",10; default = 2)
     wdg[:FillAlpha] = Guilia.value_attribute("fillalpha",0.3; default = 0.3)
     wdg[:Xrotation] = Guilia.value_attribute("xrotation",0; default = 0)
     wdg[:Yrotation] = Guilia.value_attribute("yrotation",0; default = 0)
-    value_output = Interact.@map join((&wdg[:FontSize], &wdg[:LegendFontSize],&wdg[:FillAlpha],&wdg[:Xrotation],&wdg[:Yrotation]),",")
+    value_output = Interact.@map join((&wdg[:FontSize], &wdg[:LegendFontSize],&wdg[:LineWidth],&wdg[:FillAlpha],&wdg[:Xrotation],&wdg[:Yrotation]),",")
     connect!(value_output,wdg.output)
     @layout! wdg vbox(
                     :FontSize,
                     :LegendFontSize,
+                    :LineWidth,
                     :FillAlpha,
                     :Xrotation,
                     :Yrotation

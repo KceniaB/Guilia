@@ -1,9 +1,1 @@
-const analysis_options = OrderedDict(
-    "" => nothing,
-    "Cumulative" => GroupSummaries.cumulative,
-    "Density" => GroupSummaries.density,
-    "Frequency" => GroupSummaries.frequency,
-    "Hazard" => GroupSummaries.hazard,
-    "Local Regression" => GroupSummaries.localregression,
-    "Expected Value" => GroupSummaries.expectedvalue
-    )
+const Flip_dict = Dict([:MouseID => TableWidgets.categorical, :Box => TableWidgets.categorical])

@@ -51,7 +51,7 @@ include(joinpath("Photometry","traces.jl"))
 include(joinpath("Photometry","offsets.jl"))
 include(joinpath("Photometry","signal_widget.jl"))
 include(joinpath("Photometry","construct.jl"))
-include(joinpath("Photometry","recombinase_gui.jl"))
+include("recombinase_gui.jl")
 
  export launch, launch_signal
  export carica

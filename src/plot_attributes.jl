@@ -1,5 +1,5 @@
 function plot_attributes_w()
-    wdg = Widget{:Plot_attributes}(output = Observable{Any}(("tick_orientation = :out, size = (809,500), fontfamily = \"bookman\"")))
+    wdg = Widget{:Plot_attributes}(output = Observable{Any}(("tick_orientation = :out, fillalpha = 0.3, legend = :topleft,size = (809,500), fontfamily = \"bookman\"")))
     wdg[:Texts] = text_attributes()
     wdg[:Measures] = two_values_attributes()
     wdg[:Options] = optional_attributes()

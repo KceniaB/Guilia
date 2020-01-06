@@ -9,9 +9,10 @@ function offset_window(Start_offset = -50; Stop_offset = 50)
                                         output = Interact.@map range(&window_start,stop = &window_stop)
                                         )
     Widgets.@layout! vectorialaxis Widgets.div(
-                                            _hbox(
-                                                _vbox("Start",:Start),
-                                                _vbox("Stop",:Stop)
+                                            vbox(
+                                                vbox("Start",:Start),
+                                                vskip(1em),
+                                                vbox("Stop",:Stop)
                                                 )
                                             )
 end

@@ -6,7 +6,18 @@ _vbox(args...) = Widgets.div(args...; style = Dict("display" => "flex", "flex-di
 get_kwargs(; kwargs...) = kwargs
 string2kwargs(s::AbstractString) = eval(Meta.parse("get_kwargs($s)"))
 
-const analysis_options_hacked = OrderedDict(
+const Analysis_list = ["",
+    "Cumulative",
+    "Density",
+    "Hazard",
+    "Prediction",
+    "PredictionWithAxis",
+    "Μ_σ scatter",
+    "Gamma",
+    "Count",
+    "Sum"]
+
+const Analysis_functions = OrderedDict(
     "" => nothing,
     "Cumulative" => Recombinase.cumulative,
     "Density" => Recombinase.density,
@@ -17,6 +28,7 @@ const analysis_options_hacked = OrderedDict(
     "Gamma" => Guilia.Gamma_dist,
     "Count" => Guilia.count,
     "Sum" => Guilia.summing)
+
 
 is_small(col::AbstractArray) = false
 is_small(col::AbstractArray{<:Union{Missing, Bool, AbstractString}}) = true
@@ -43,7 +55,10 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     maybens = Observables.@map vcat(Symbol(), &ns)
     xaxis = dropdown(ns,label = "X")
     yaxis = dropdown(maybens,label = "Y")
-    an_opt = dropdown(analysis_options_hacked, label = "Analysis")
+    an_opt = dropdown(Analysis_list, label = "Analysis")
+    vectorialaxis = offset_window()
+    n_bins = spinbox(value = 50)
+    opts = Observables.@map mask(OrderedDict("Density"=>vbox("Number of points",n_bins),"PredictionWithAxis" => vectorialaxis); key = &an_opt)
     axis_type = dropdown([:automatic, :continuous, :discrete, :vectorial], label = "Axis type")
     error = dropdown(Observables.@map(vcat(Recombinase.automatic, &ns)), label="Error")
     styles = collect(keys(Recombinase.style_dict))
@@ -58,13 +73,16 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     typed_attributes = Widgets.textbox("Insert optional plot attributes")
     attributes = plot_attributes_w()
     plot_kwargs = Interact.@map isempty(&typed_attributes) ? &attributes : &attributes * "," * &typed_attributes
-    vectorialaxis = offset_window()
     Observables.@map! output begin
         &btn
         select = yaxis[] == Symbol() ? xaxis[] : (xaxis[], yaxis[])
         grps = Dict(key => val[] for (key, val) in zip(styles, splitters) if val[] != Symbol())
-        an = an_opt[]
-        an == analysis_options_hacked["PredictionWithAxis"] && (an = an(axis = vectorialaxis[]))
+        an = Analysis_functions[an_opt[]]
+        if an == Analysis_functions["PredictionWithAxis"]
+            an = an(axis = vectorialaxis[])
+        elseif (an == Analysis_functions["Density"])
+            an = an(npoints = n_bins[])
+        end
         an_inf = isnothing(an) ? nothing : Recombinase.Analysis{axis_type[]}(an)
         args, kwargs = Recombinase.series2D(
                                 an_inf,
@@ -80,12 +98,14 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     ui = Widget(
         OrderedDict(
             :data => data,
-            :vectorialaxis => vectorialaxis,
             :xaxis => xaxis,
             :yaxis => yaxis,
             :analysis => an_opt,
             :axis_type => axis_type,
             :error => error,
+            :opts => opts,
+            :vectorialaxis => vectorialaxis,
+            :n_bins => n_bins,
             :plotter => plotter,
             :plot_button => btn,
             :ribbon => ribbon,
@@ -98,7 +118,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     )
 
     Widgets.@layout! ui Widgets.div(
-                                    _hbox(
+                                    hbox(
                                           :xaxis,
                                           :yaxis,
                                           :analysis,
@@ -106,16 +126,21 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
                                           :error,
                                           :plotter
                                          ),
-                                    :ribbon,
-                                    :vectorialaxis,
                                     vskip(1em),
-                                    :plot_button,
                                     hbox(
-                                          vbox(:splitters...),
-                                          hskip(1em),
-                                          vbox(output, :typed_attributes),
-                                          hskip(1em),
-                                          :attributes
+                                        vbox(
+                                            :ribbon,
+                                            :opts,
+                                            vskip(1em),
+                                            :plot_button,
+                                            vbox(:splitters...)
+                                            ),
+                                        hbox(
+                                              hskip(1em),
+                                              vbox(output, :typed_attributes),
+                                              hskip(1em),
+                                              :attributes
+                                             )
                                          )
                                    )
 end

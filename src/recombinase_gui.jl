@@ -16,8 +16,7 @@ const Analysis_list = ["",
     "Gamma",
     "Count",
     "Sum",
-    "Delta_means",
-    "Normalised_density"]
+    "Delta_means"]
 
 const Analysis_functions = OrderedDict(
     "" => nothing,
@@ -32,10 +31,10 @@ const Analysis_functions = OrderedDict(
     "Sum" => Guilia.summing,
     "Delta_means" => Guilia.Delta_means)
 
-const  normalizations_functions = OrderedDict(
-    "Mean" => mean_normalization,
-    "Zscoring" => zscore
-)
+# const  normalizations_functions = OrderedDict(
+#     "Mean" => mean_normalization,
+#     "Zscoring" => zscore
+# )
 
 is_small(col::AbstractArray) = false
 is_small(col::AbstractArray{<:Union{Missing, Bool, AbstractString}}) = true
@@ -67,7 +66,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     vectorialaxis = offset_window()
     n_bins = spinbox(value = 50)
     factor = dropdown(smallns, label = "Comparing Factor")
-    normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
+    # normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
     opts = Observables.@map mask(OrderedDict(
         "Density"=>vbox("Number of points",n_bins),
         "PredictionWithAxis" => vectorialaxis,

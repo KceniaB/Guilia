@@ -19,7 +19,7 @@ using Reexport
 using Distributions
 using Distances
 using CategoricalArrays
-
+using KernelDensity: pdf, kde, InterpKDE
 using Images
 using Tables
 using BSON
@@ -45,6 +45,8 @@ include(joinpath("New_Analysis","Counting.jl"))
 include(joinpath("New_Analysis","Gamma.jl"))
 include(joinpath("New_Analysis","Scatter_MeanSD.jl"))
 include(joinpath("New_Analysis","Summing.jl"))
+include(joinpath("New_Analysis","Delta_Mean.jl"))
+# include(joinpath("New_Analysis","Normalised_Dist.jl"))
 include(joinpath("Photometry","sliding_mean.jl"))
 include(joinpath("Photometry","regression.jl"))
 include(joinpath("Photometry","utilities.jl"))

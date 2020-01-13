@@ -15,7 +15,9 @@ const Analysis_list = ["",
     "Μ_σ scatter",
     "Gamma",
     "Count",
-    "Sum"]
+    "Sum",
+    "Delta_means",
+    "Normalised_density"]
 
 const Analysis_functions = OrderedDict(
     "" => nothing,
@@ -27,8 +29,13 @@ const Analysis_functions = OrderedDict(
     "Μ_σ scatter" => Guilia.scatter_mu_sd,
     "Gamma" => Guilia.Gamma_dist,
     "Count" => Guilia.count,
-    "Sum" => Guilia.summing)
+    "Sum" => Guilia.summing,
+    "Delta_means" => Guilia.Delta_means)
 
+const  normalizations_functions = OrderedDict(
+    "Mean" => mean_normalization,
+    "Zscoring" => zscore
+)
 
 is_small(col::AbstractArray) = false
 is_small(col::AbstractArray{<:Union{Missing, Bool, AbstractString}}) = true
@@ -53,17 +60,22 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     data = Observables.@map table(&data′, copy = false, presorted = true)
     ns = Observables.@map sort(collect(colnames(&data)))
     maybens = Observables.@map vcat(Symbol(), &ns)
+    smallns =  map(take_small, data, maybens)
     xaxis = dropdown(ns,label = "X")
     yaxis = dropdown(maybens,label = "Y")
     an_opt = dropdown(Analysis_list, label = "Analysis")
     vectorialaxis = offset_window()
     n_bins = spinbox(value = 50)
-    opts = Observables.@map mask(OrderedDict("Density"=>vbox("Number of points",n_bins),"PredictionWithAxis" => vectorialaxis); key = &an_opt)
+    factor = dropdown(smallns, label = "Comparing Factor")
+    normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
+    opts = Observables.@map mask(OrderedDict(
+        "Density"=>vbox("Number of points",n_bins),
+        "PredictionWithAxis" => vectorialaxis,
+        "Delta_means" => factor); key = &an_opt)
     axis_type = dropdown([:automatic, :continuous, :discrete, :vectorial], label = "Axis type")
     error = dropdown(Observables.@map(vcat(Recombinase.automatic, &ns)), label="Error")
     styles = collect(keys(Recombinase.style_dict))
     sort!(styles)
-    smallns =  map(take_small, data, maybens)
     splitters = [dropdown(smallns, label = string(style)) for style in styles]
     plotter = dropdown(plotters, label = "Plotter")
     ribbon = toggle("Ribbon", value = false)
@@ -82,6 +94,8 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
             an = an(axis = vectorialaxis[])
         elseif (an == Analysis_functions["Density"])
             an = an(npoints = n_bins[])
+        elseif (an == Analysis_functions["Delta_means"])
+            an = an(factor = JuliaDB.select(data[],factor[]))
         end
         an_inf = isnothing(an) ? nothing : Recombinase.Analysis{axis_type[]}(an)
         args, kwargs = Recombinase.series2D(

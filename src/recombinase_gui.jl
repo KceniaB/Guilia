@@ -99,7 +99,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
         an_inf = isnothing(an) ? nothing : Recombinase.Analysis{axis_type[]}(an)
         args, kwargs = Recombinase.series2D(
                                 an_inf,
-                                &data,
+                                data[], #removed automatic plot when data change
                                 Recombinase.Group(; grps...);
                                 postprocess = postprocess,
                                 select = select,

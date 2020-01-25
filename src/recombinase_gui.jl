@@ -68,7 +68,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     factor = dropdown(smallns, label = "Comparing Factor")
     # normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
     opts = Observables.@map mask(OrderedDict(
-        "Density"=>vbox("Number of points",n_bins),
+        "Density"=>vbox("Band width",BandWidth,"Number of points",n_bins),
         "NormalizedDensity"=>vbox("Band width",BandWidth,"Axes",normalized_axes),
         "PredictionWithAxis" => vectorialaxis,
         "Delta_means" => factor); key = &an_opt)

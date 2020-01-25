@@ -1,9 +1,11 @@
+const plotters_functions = [plot, scatter, groupedbar,plot!,scatter!,histogram,histogram2d, boxplot]
+
 function mygui(fn, categorical_thrs)
     data = Guilia.carica(fn)
     filters = selectors(data,threshold = categorical_thrs,types = Guilia.Flip_dict);
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
-    viewer = customized_gui(separator, [plot, scatter, groupedbar]);
+    viewer = customized_gui(separator, plotters_functions);
 
     components = OrderedDict(
         :filters => filters,
@@ -25,7 +27,7 @@ function mygui_signal(t_name,d_name; thrs = 10)
     filters = selectors(signals,threshold = thrs,types = Guilia.Flip_dict);
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
-    viewer = customized_gui(separator,[plot, scatter, groupedbar], postprocess = (; Offsets = t -> t / 50))
+    viewer = customized_gui(separator,plotters_functions, postprocess = (; Offsets = t -> t / 50))
 
     components = OrderedDict(
         :trim => gross_filters,

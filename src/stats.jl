@@ -7,7 +7,7 @@ t = stim[][:data][]
 df = DataFrame(t)
 union(df[df.Area .== "NA",:Session])
 categorical!(df,:Protocol)
-levels!(df[:Protocol],["90/90","90/30","30/30"])
+levels!(df[:Protocol],["80/40","60/30","40/20"])
 categorical!(df,:Gen)
 categorical!(df,:Stim)
 levels(df[:Stim])

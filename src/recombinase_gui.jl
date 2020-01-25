@@ -94,7 +94,6 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
         elseif (an == Analysis_functions["Density"])
             an = an(npoints = n_bins[])
         elseif (an == Analysis_functions["Delta_means"])
-            #an = an(factor = JuliaDB.select(data[],factor[]))
             select = (xaxis[], yaxis[],factor[])
         end
         an_inf = isnothing(an) ? nothing : Recombinase.Analysis{axis_type[]}(an)

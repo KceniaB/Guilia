@@ -16,7 +16,8 @@ const Analysis_list = ["",
     "Gamma",
     "Count",
     "Sum",
-    "Delta_means"]
+    "Delta_means",
+    "NormalizedDensity"]
 
 const Analysis_functions = OrderedDict(
     "" => nothing,
@@ -29,12 +30,8 @@ const Analysis_functions = OrderedDict(
     "Gamma" => Guilia.Gamma_dist,
     "Count" => Guilia.count,
     "Sum" => Guilia.summing,
-    "Delta_means" => Guilia.Delta_means)
-
-# const  normalizations_functions = OrderedDict(
-#     "Mean" => mean_normalization,
-#     "Zscoring" => zscore
-# )
+    "Delta_means" => Guilia.Delta_means,
+    "NormalizedDensity" => Guilia.NormalizedDensity)
 
 is_small(col::AbstractArray) = false
 is_small(col::AbstractArray{<:Union{Missing, Bool, AbstractString}}) = true
@@ -63,14 +60,19 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     xaxis = dropdown(ns,label = "X")
     yaxis = dropdown(maybens,label = "Y")
     an_opt = dropdown(Analysis_list, label = "Analysis")
+    ## list of specific arguments per fucntion
     vectorialaxis = offset_window()
     n_bins = spinbox(value = 50)
+    BandWidth = spinbox(0.01:0.01:1;value = 0.1)
+    normalized_axes = offset_window(Start_offset = 0, Stop_offset = 5,step = 0.1)
     factor = dropdown(smallns, label = "Comparing Factor")
     # normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
     opts = Observables.@map mask(OrderedDict(
         "Density"=>vbox("Number of points",n_bins),
+        "NormalizedDensity"=>vbox("Band width",BandWidth,"Axes",normalized_axes),
         "PredictionWithAxis" => vectorialaxis,
         "Delta_means" => factor); key = &an_opt)
+    ##
     axis_type = dropdown([:automatic, :continuous, :discrete, :vectorial], label = "Axis type")
     error = dropdown(Observables.@map(vcat(Recombinase.automatic, &ns)), label="Error")
     styles = collect(keys(Recombinase.style_dict))
@@ -93,6 +95,8 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
             an = an(axis = vectorialaxis[])
         elseif (an == Analysis_functions["Density"])
             an = an(npoints = n_bins[])
+        elseif (an == Analysis_functions["NormalizedDensity"])
+            an = an(axis = normalized_axes[], bandwidth = BandWidth[])
         elseif (an == Analysis_functions["Delta_means"])
             select = (xaxis[], yaxis[],factor[])
         end

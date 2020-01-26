@@ -67,9 +67,8 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     smoothness = Guilia.smoothings()
     normalized_axes = offset_window(Start_offset = 0, Stop_offset = 5,step = 0.1)
     factor = dropdown(smallns, label = "Comparing Factor")
-    # normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
     opts = Observables.@map mask(OrderedDict(
-        "Density"=>vbox("Number of points",n_bins),
+        "Density"=>vbox("Smoothing method",smoothness),
         "NormalizedDensity"=>vbox("Smoothing method",smoothness,"Axes",normalized_axes),
         "PredictionWithAxis" => vectorialaxis,
         "Delta_means" => factor); key = &an_opt)
@@ -95,7 +94,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
         if an == Analysis_functions["PredictionWithAxis"]
             an = an(axis = vectorialaxis[])
         elseif (an == Analysis_functions["Density"])
-            an = an(npoints = n_bins[])
+            an = an(;smoothness[]...)
         elseif (an == Analysis_functions["NormalizedDensity"])
             Norm_opts = merge(smoothness[],(axis = normalized_axes[],))
             an = an(;Norm_opts...)

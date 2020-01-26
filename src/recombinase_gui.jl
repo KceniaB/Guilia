@@ -64,12 +64,13 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     vectorialaxis = offset_window()
     n_bins = spinbox(value = 50)
     BandWidth = spinbox(0.01:0.01:1;value = 0.1)
+    smoothness = Guilia.smoothings()
     normalized_axes = offset_window(Start_offset = 0, Stop_offset = 5,step = 0.1)
     factor = dropdown(smallns, label = "Comparing Factor")
     # normalizations_opts = dropdown(normalizations_functions, label = "Normalization method")
     opts = Observables.@map mask(OrderedDict(
-        "Density"=>vbox("Band width",BandWidth,"Number of points",n_bins),
-        "NormalizedDensity"=>vbox("Band width",BandWidth,"Axes",normalized_axes),
+        "Density"=>vbox("Number of points",n_bins),
+        "NormalizedDensity"=>vbox("Smoothing method",smoothness,"Axes",normalized_axes),
         "PredictionWithAxis" => vectorialaxis,
         "Delta_means" => factor); key = &an_opt)
     ##
@@ -96,7 +97,8 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
         elseif (an == Analysis_functions["Density"])
             an = an(npoints = n_bins[])
         elseif (an == Analysis_functions["NormalizedDensity"])
-            an = an(axis = normalized_axes[], bandwidth = BandWidth[])
+            Norm_opts = merge(smoothness[],(axis = normalized_axes[],))
+            an = an(;Norm_opts...)
         elseif (an == Analysis_functions["Delta_means"])
             select = (xaxis[], yaxis[],factor[])
         end

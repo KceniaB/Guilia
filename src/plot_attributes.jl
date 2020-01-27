@@ -1,5 +1,8 @@
 function plot_attributes_w()
-    wdg = Widget{:Plot_attributes}(output = Observable{Any}(("tick_orientation = :out, fillalpha = 0.3, legend = :topleft,size = (809,500), fontfamily = \"bookman\"")))
+    wdg = Widget{:Plot_attributes}(output = Observable{Any}(("tick_orientation = :out,
+    legend = :topleft,
+    size = (809,500),
+    fontfamily = \"bookman\"")))
     wdg[:Texts] = text_attributes()
     wdg[:Measures] = two_values_attributes()
     wdg[:Options] = optional_attributes()
@@ -148,8 +151,8 @@ function optional_attributes()
     return wdg
 end
 
-function value_attribute(nome::String,val;default = :auto)
-    amount = Widgets.spinbox(value = val)
+function value_attribute(nome::String;default = 10)
+    amount = Widgets.spinbox(value = default)
     choice = togglecontent(vbox(amount))
     res = Interact.@map &choice ? ("$nome = $(&amount)") : ("$nome = ($default)")
     wdg = Widget{:Size_attribute}(output = res)
@@ -162,16 +165,22 @@ function value_attribute(nome::String,val;default = :auto)
 end
 
 function value_attributes()
-    wdg = Widget{:Value_attributes}(output = Observable{Any}(("fillalpha = 0.3")))
-    wdg[:FontSize] = Guilia.value_attribute("tickfontsize",10; default = 10)
-    wdg[:LegendFontSize] = Guilia.value_attribute("legendfontsize",10; default = 10)
-    wdg[:LineWidth] = Guilia.value_attribute("linewidth",10; default = 2)
-    wdg[:FillAlpha] = Guilia.value_attribute("fillalpha",0.3; default = 0.3)
-    wdg[:Xrotation] = Guilia.value_attribute("xrotation",0; default = 0)
-    wdg[:Yrotation] = Guilia.value_attribute("yrotation",0; default = 0)
-    value_output = Interact.@map join((&wdg[:FontSize], &wdg[:LegendFontSize],&wdg[:LineWidth],&wdg[:FillAlpha],&wdg[:Xrotation],&wdg[:Yrotation]),",")
+    wdg = Widget{:Value_attributes}(output = Observable{Any}(("guidefontsize = 14,
+    tickfontsize = 12,
+    legendfontsize = 12,
+    linewidth = 2,
+    fillalpha = 0.3")))
+    wdg[:GuideFontSize] = Guilia.value_attribute("guidefontsize"; default = 14)
+    wdg[:FontSize] = Guilia.value_attribute("tickfontsize"; default = 12)
+    wdg[:LegendFontSize] = Guilia.value_attribute("legendfontsize"; default = 12)
+    wdg[:LineWidth] = Guilia.value_attribute("linewidth"; default = 2)
+    wdg[:FillAlpha] = Guilia.value_attribute("fillalpha"; default = 0.3)
+    wdg[:Xrotation] = Guilia.value_attribute("xrotation"; default = 0)
+    wdg[:Yrotation] = Guilia.value_attribute("yrotation"; default = 0)
+    value_output = Interact.@map join((&wdg[:GuideFontSize],&wdg[:FontSize], &wdg[:LegendFontSize],&wdg[:LineWidth],&wdg[:FillAlpha],&wdg[:Xrotation],&wdg[:Yrotation]),",")
     connect!(value_output,wdg.output)
     @layout! wdg vbox(
+                    :GuideFontSize,
                     :FontSize,
                     :LegendFontSize,
                     :LineWidth,

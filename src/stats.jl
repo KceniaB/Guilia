@@ -5,7 +5,7 @@ using Distributions
 # ##
 t = stim[][:data][]
 df = DataFrame(t)
-union(df[df.Area .== "NA",:Session])
+#union(df[df.Area .== "NA",:Session])
 categorical!(df,:Protocol)
 levels!(df[:Protocol],["80/40","60/30","40/20"])
 categorical!(df,:Gen)

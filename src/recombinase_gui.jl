@@ -69,6 +69,7 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
     factor = dropdown(smallns, label = "Comparing Factor")
     opts = Observables.@map mask(OrderedDict(
         "Density"=>vbox("Smoothing method",smoothness),
+        "Hazard"=>vbox("Smoothing method",smoothness),
         "NormalizedDensity"=>vbox("Smoothing method",smoothness,"Axes",normalized_axes),
         "PredictionWithAxis" => vectorialaxis,
         "Delta_means" => factor); key = &an_opt)
@@ -94,6 +95,8 @@ function customized_gui(data′, plotters; postprocess = NamedTuple())
         if an == Analysis_functions["PredictionWithAxis"]
             an = an(axis = vectorialaxis[])
         elseif (an == Analysis_functions["Density"])
+            an = an(;smoothness[]...)
+        elseif (an == Analysis_functions["Hazard"])
             an = an(;smoothness[]...)
         elseif (an == Analysis_functions["NormalizedDensity"])
             Norm_opts = merge(smoothness[],(axis = normalized_axes[],))

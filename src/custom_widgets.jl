@@ -26,9 +26,9 @@ function smoothings()
     opts_vals = OrderedDict(
         "Number of points" => points,
         "Band width" => width)
-    opts_list = dropdown(["Band width","Number of points"])
+    opts_list = dropdown(["Number of points","Band width"])
     opts = Observables.@map mask(&opts_vals; key = &opts_list)
-    output = Observable{Any}(Dict(:bandwidth => 0.1))
+    output = Observable{Any}(Dict(:npoints => 50))
     #output = Interact.@map Dict(Symbol(&opts_list) => opts_vals[&opts_list][])
     Observables.@map! output begin
         &points

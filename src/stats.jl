@@ -37,8 +37,8 @@ AIC_test(protocol_effect,zero_effects)
 AICc_test(protocol_effect,zero_effects)
 Likelyhood_Ratio_test(zero_effects,protocol_effect)
 
-zero_interaction = fit(LinearMixedModel, @formula( AfterLast ~ 1 + Protocol + Wall + (1|MouseID)), df)
-BarrProt_interaction = fit(LinearMixedModel, @formula( AfterLast ~ 1 + Protocol + Wall + Protocol*Wall + (1|MouseID)), df)
+Without_interaction = fit(LinearMixedModel, @formula( AfterLast ~ 1 + Protocol + Wall + (1|MouseID)), df);
+BarrProt_interaction = fit(LinearMixedModel, @formula( AfterLast ~ 1 + Protocol + Wall + Protocol*Wall + (1|MouseID)), df);
 
 AIC_test(BarrProt_interaction,zero_interaction)
 AICc_test(BarrProt_interaction,zero_interaction)

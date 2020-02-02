@@ -1,3 +1,8 @@
+"""
+`sum_stuff`
+useful for summing amount of rewards per session for instance
+"""
+
 function sum_stuff(c,v; kwargs...)
     t = table(c, v)
     t1 = groupreduce(KahanSum(), t, 1, select=2)

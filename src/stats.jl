@@ -3,6 +3,7 @@ using Distributions
 # using HypothesisTests
 # using Distances
 # ##
+stim = launch()
 t = stim[][:data][]
 df = DataFrame(t)
 #union(df[df.Area .== "NA",:Session])
@@ -40,6 +41,6 @@ Likelyhood_Ratio_test(zero_effects,protocol_effect)
 Without_interaction = fit(LinearMixedModel, @formula( AfterLast ~ 1 + Protocol + Wall + (1|MouseID)), df);
 BarrProt_interaction = fit(LinearMixedModel, @formula( AfterLast ~ 1 + Protocol + Wall + Protocol*Wall + (1|MouseID)), df);
 
-AIC_test(BarrProt_interaction,zero_interaction)
-AICc_test(BarrProt_interaction,zero_interaction)
-Likelyhood_Ratio_test(zero_interaction,BarrProt_interaction)
+AIC_test(BarrProt_interaction,Without_interaction)
+AICc_test(BarrProt_interaction,Without_interaction)
+Likelyhood_Ratio_test(Without_interaction,BarrProt_interaction)

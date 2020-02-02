@@ -91,8 +91,8 @@ end
 function two_values_attributes()
     wdg = Widget{:Measures_attributes}(output = Observable{Any}(("size = (809,500)")))
     wdg[:Fig_size] = Guilia.two_values_attribute("size",809,500;default = (809,500))
-    wdg[:Xlims] = Guilia.two_values_attribute("xlims",0,20)
-    wdg[:Ylims] = Guilia.two_values_attribute("ylims",0,20)
+    wdg[:Xlims] = Guilia.two_values_attribute("xlims",0.0,20.0)
+    wdg[:Ylims] = Guilia.two_values_attribute("ylims",0.0,20.0)
     measure_output = Interact.@map join((&wdg[:Fig_size], &wdg[:Xlims], &wdg[:Ylims]),",")
     connect!(measure_output,wdg.output)
     @layout! wdg vbox(

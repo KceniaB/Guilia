@@ -6,14 +6,33 @@ function mygui(fn, categorical_thrs)
     categorizer = categorify_w(filters);
     separator  = separate_w(categorizer);
     viewer = customized_gui(separator, plotters_functions);
+    saver = Interact.savedialog()
+    on(saver) do fn
+        savefig(viewer[],saver[]);
+    end
 
     components = OrderedDict(
+        :save => saver,
         :filters => filters,
-        :editor => hbox(categorizer,separator),
+        :categorizer => categorizer,
+        :splitter => separator,
         :viewer => viewer)
 
-    lt = tabulator(components);
-    return Widget(components, layout = _ -> lt, output = observe(viewer));
+    lt = OrderedDict(
+    :filters => filters,
+    :editors => hbox(categorizer,separator),
+    :viewer => viewer)
+
+    Mygui = Widget{:Gui}(components;output = observe(viewer))
+
+    Widgets.@layout! Mygui Widgets.div(
+                                        vbox(
+                                            :save,
+                                            tabulator(lt)
+                                            )
+                                        )
+
+    return Mygui
 end
 ##
 function mygui_signal(t_name,d_name; thrs = 10)
@@ -49,14 +68,14 @@ Use categorical_thrs to determined how many maximum unique value in an array det
 function launch(;categorical_thrs = 10)
     f  = filepicker();
     datagui = Observable{Any}("Load a file")
-    saver = Interact.savedialog()
-    on(saver) do fn
-        savefig(datagui[][],saver[]);
-    end
+    # saver = Interact.savedialog()
+    # on(saver) do fn
+    #     savefig(datagui[][],saver[]);
+    # end
     map!(mygui, datagui, f, categorical_thrs)
 
     w = Window()
-    body!(w, Widgets.div(hbox(hskip(1em), f, hskip(1em), saver), datagui))
+    body!(w, Widgets.div(f#=hbox(hskip(1em), f, hskip(1em), saver)=#, datagui))
     return datagui
 end
 ##

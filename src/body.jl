@@ -57,7 +57,7 @@ function mygui_signal(t_name,d_name; thrs = 10)
         :trim => gross_filters,
         :signals => signals,
         :filters => filters,
-        :categorizer => separator,
+        :categorizer => categorizer,
         :separator => separator,
         :viewer => viewer)
 

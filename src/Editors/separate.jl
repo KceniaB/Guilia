@@ -1,4 +1,4 @@
-function Guilia.separate(t,cond::AbstractArray,var::Symbol)
+function separate(t,cond::AbstractArray,var::Symbol)
     if isempty(cond)
         return t
     else
@@ -10,14 +10,14 @@ function Guilia.separate(t,cond::AbstractArray,var::Symbol)
     return t
 end
 
-function Guilia.separate(t,cond::Symbol,var::Symbol)
+function separate(t,cond::Symbol,var::Symbol)
     conditions = union(columns(t, cond))
     # data = @transform t (
     #            ctrue = cols(cond) == conditions[1] ? cols(var) : NaN,
     #            cfalse = cols(cond) == conditions[1] ? NaN : cols(var),
     #        )
-    ctrue = [x == conditions[1] ? x : NaN for x in JuliaDB.select(t,var)]
-    cfalse = [x == conditions[1] ? NaN : x for x in JuliaDB.select(t,var)]
+    ctrue = [case == conditions[1] ? value : NaN for (case,value) in rows(t,(cond,var))]
+    cfalse = [case == conditions[1] ? NaN : value for (case,value) in rows(t,(cond,var))]
     newname1 = Symbol(string(var)*"_"*string(cond)*"True")
     newname2 = Symbol(string(var)*"_"*string(cond)*"False")
     #data = JuliaDB.rename(data,(:ctrue => newname1,:cfalse => newname2))
@@ -45,14 +45,14 @@ function separate_w(data′)
     #binaries = Observables.@map take_binaries(&data, &maybens)
     selection = checkboxes(binaries)
     #wdg[:Selectors] = Observables.@map checkboxes(&binaries)
-    largens = map(Guilia.take_large,data, maybens)
-    #largens = Observables.@map Guilia.take_large(&data, &maybens)
+    largens = map(take_large,data, maybens)
+    #largens = Observables.@map take_large(&data, &maybens)
     measure = dropdown(largens)
     #wdg[:Measure] = dropdown(largens)
     separate_b = button(label="Separate!")
     #wdg[:Separate] = button(label="Separate!")
 
-    output = Interact.@map (&separate_b; separate(data[], selection[],measure[]))
+    output = Interact.@map (&separate_b; separate(&data, selection[],measure[]))
     wdg = Widget{:Separator}(OrderedDict(
                                 :Selectors =>   selection,
                                 :Measure => measure,
@@ -64,13 +64,4 @@ function separate_w(data′)
                     :Selectors
                     )
     return wdg
-end
-
-function separate(data::IndexedTables.IndexedTable,s::Widget{:Separator})
-    if length(s[:Selectors][]) > 0
-        for condition in s[:Selectors][]
-            data = separate(data,condition,s[:Measure][])
-        end
-    end
-    return data
 end
